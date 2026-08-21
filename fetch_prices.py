@@ -30,7 +30,8 @@ def fetch_price(kod):
                                   check=True).stdout.decode("utf-8", "replace")
             m = PRICE_RE.search(html)
             if not m:
-                raise ValueError("sayfada fiyat bulunamadi")
+                snippet = re.sub(r"\s+", " ", html[:300])
+                raise ValueError(f"sayfada fiyat bulunamadi ({len(html)} bayt): {snippet}")
             price = float(m.group(1))
             if price <= 0:
                 raise ValueError("fiyat <= 0")
