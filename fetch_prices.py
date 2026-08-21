@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Fintables'tan fon fiyatlarini ceker, data.json'a gunluk kayit ekler.
 
-Guvenlik: fiyatlarin tamami cekilemezse ya da bir fiyat sifir/negatifse
+Once curl ile dener; Cloudflare engeline takilirsa Playwright (gercek Chromium)
+ile tekrar dener. Fiyatlarin tamami cekilemezse ya da bir fiyat sifir/negatifse
 data.json'a DOKUNMADAN hata koduyla cikar; bozuk veri asla yazilmaz.
 """
 import json
@@ -17,39 +18,78 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 PRICE_RE = re.compile(r'\\?"price\\?":\s*([0-9]+(?:\.[0-9]+)?)')
 
 
-def fetch_price(kod):
+def parse_price(html, kaynak, kod):
+    m = PRICE_RE.search(html)
+    if not m:
+        snippet = re.sub(r"\s+", " ", html[:250])
+        raise ValueError(f"{kod} {kaynak}: fiyat bulunamadi ({len(html)} bayt): {snippet}")
+    price = float(m.group(1))
+    if price <= 0:
+        raise ValueError(f"{kod} {kaynak}: fiyat <= 0")
+    return price
+
+
+def curl_fetch(kod):
     # Python'un TLS imzasi Cloudflare'e takildigi icin curl kullaniyoruz.
     cmd = ["curl", "-s", "-m", "40", BASE + kod,
            "-H", f"User-Agent: {UA}",
            "-H", "Accept: text/html",
            "-H", "Accept-Language: tr-TR,tr;q=0.9,en;q=0.8"]
     last_err = None
-    for attempt in range(4):
+    for attempt in range(2):
         try:
             html = subprocess.run(cmd, capture_output=True, timeout=60,
                                   check=True).stdout.decode("utf-8", "replace")
-            m = PRICE_RE.search(html)
-            if not m:
-                snippet = re.sub(r"\s+", " ", html[:300])
-                raise ValueError(f"sayfada fiyat bulunamadi ({len(html)} bayt): {snippet}")
-            price = float(m.group(1))
-            if price <= 0:
-                raise ValueError("fiyat <= 0")
-            return price
+            if "Just a moment" in html:
+                raise ValueError("Cloudflare engeli")
+            return parse_price(html, "curl", kod)
         except Exception as e:  # noqa: BLE001
             last_err = e
-            time.sleep(5 * (attempt + 1))
-    raise RuntimeError(f"{kod}: fiyat cekilemedi: {last_err}")
+            if "Cloudflare" in str(e):
+                break  # engel kalici, tekrar denemenin anlami yok
+            time.sleep(4)
+    raise RuntimeError(str(last_err))
+
+
+def browser_fetch(kodlar):
+    """Cloudflare'in otomatik kontrolunu gercek Chromium ile gec."""
+    from playwright.sync_api import sync_playwright
+    fiyat = {}
+    with sync_playwright() as p:
+        b = p.chromium.launch(headless=True,
+                              args=["--disable-blink-features=AutomationControlled"])
+        ctx = b.new_context(user_agent=UA, locale="tr-TR",
+                            timezone_id="Europe/Istanbul")
+        pg = ctx.new_page()
+        for kod in kodlar:
+            pg.goto(BASE + kod, wait_until="domcontentloaded", timeout=60000)
+            html = ""
+            for _ in range(40):  # challenge'in cozulmesini bekle (en cok 40 sn)
+                html = pg.content()
+                if PRICE_RE.search(html):
+                    break
+                pg.wait_for_timeout(1000)
+            fiyat[kod] = parse_price(html, "browser", kod)
+            print(f"{kod}: {fiyat[kod]} (browser)")
+        b.close()
+    return fiyat
 
 
 def main():
     with open("holdings.json", encoding="utf-8") as f:
         kodlar = [x["kod"] for x in json.load(f)["fonlar"]]
 
-    fiyat = {}
+    fiyat, kalan = {}, []
     for kod in kodlar:
-        fiyat[kod] = fetch_price(kod)
-        print(f"{kod}: {fiyat[kod]}")
+        try:
+            fiyat[kod] = curl_fetch(kod)
+            print(f"{kod}: {fiyat[kod]}")
+        except Exception as e:  # noqa: BLE001
+            print(f"{kod}: curl basarisiz ({e}), tarayici kuyruguna alindi")
+            kalan.append(kod)
+
+    if kalan:
+        fiyat.update(browser_fetch(kalan))
 
     # Turkiye saatiyle bugunun tarihi
     bugun = datetime.now(timezone(timedelta(hours=3))).strftime("%Y-%m-%d")

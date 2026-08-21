@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Playwright kur (Cloudflare yedegi)
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
       - name: Fiyatlari cek
         run: python fetch_prices.py
 
