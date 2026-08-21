@@ -1,10 +1,16 @@
 {
-  "_not": "Adet degistirmek icin sadece bu dosyayi duzenle. Fon eklemek icin yeni satir ekle (kod Fintables/TEFAS kodu olmali).",
+  "_not": "Adet degistirmek icin sadece bu dosyayi duzenle. Fon eklemek icin yeni satir ekle (kod TEFAS/Fintables kodu olmali).",
+  "_sepet": "SKOR v4 #1 sepeti - P1'den 21.08.2026'da gecildi. Adetler gecis planindaki hedef TL tutarlarinin o gunku fiyatlara bolunmesiyle bulundu.",
   "fonlar": [
-    { "kod": "TLY", "ad": "Tera Portföy Birinci Serbest Fon", "adet": 82 },
-    { "kod": "PBR", "ad": "Pusula Portföy Birinci Değişken Fon", "adet": 113043 },
-    { "kod": "DFI", "ad": "Atlas Portföy Serbest Fon", "adet": 79242 },
-    { "kod": "RBR", "ad": "Re-Pie Portföy Birinci Katılım Serbest Fon", "adet": 55016 },
-    { "kod": "IHC", "ad": "Inveo Portföy Inter Serbest Fon", "adet": 6411 }
+    { "kod": "TLY", "ad": "Tera Portföy Birinci Serbest Fon", "adet": 79 },
+    { "kod": "TP2", "ad": "Tera Portföy Para Piyasası (TL) Fonu", "adet": 158885 },
+    { "kod": "DFI", "ad": "Atlas Portföy Serbest Fon", "adet": 33628 },
+    { "kod": "PTO", "ad": "Pardus Portföy Temettü Ödeyen Şirketler Hisse Senedi Fonu", "adet": 87868 },
+    { "kod": "IJZ", "ad": "İş Portföy Siber Güvenlik Teknolojileri Değişken Fon", "adet": 9922 },
+    { "kod": "IHC", "ad": "Inveo Portföy Inter Serbest Fon", "adet": 14887 },
+    { "kod": "LPH", "ad": "Statech Portföy İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 71037 },
+    { "kod": "GPG", "ad": "Inveo Portföy Birinci Değişken Fon", "adet": 6042 },
+    { "kod": "RBR", "ad": "Re-Pie Portföy Birinci Katılım Serbest Fon", "adet": 19512 },
+    { "kod": "HEH", "ad": "Hedef Portföy Algo Everest İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 15739 }
   ]
 }

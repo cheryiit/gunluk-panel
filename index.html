@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <title>Günlük Kazanç</title>
 <style>
 :root { color-scheme: light dark;
@@ -9,42 +12,82 @@
   --bg:#0d0d0d; --card:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#8a8981;
   --grid:#2c2c2a; --border:rgba(255,255,255,.10); --good:#2fbf2f; --bad:#e05555; --acc:#3987e5; } }
 * { box-sizing:border-box; }
-body { margin:0; padding:20px; background:var(--bg); color:var(--ink);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+body { margin:0; padding:20px 20px 28px; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; }
 .wrap { max-width:860px; margin:0 auto; }
 h1 { font-size:1.25rem; margin:0 0 2px; }
+h2 { font-size:.9rem; margin:0 0 10px; }
 .sub { color:var(--ink2); font-size:.83rem; margin-bottom:14px; }
-.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
-.hero { text-align:center; padding:26px 18px; }
-.hero .big { font-size:2.6rem; font-weight:750; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
-.hero .pct { font-size:1.15rem; font-weight:650; margin-top:2px; }
-.hero .lbl { font-size:.78rem; color:var(--ink2); margin-top:6px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; margin-bottom:12px; }
 .g { color:var(--good); } .r { color:var(--bad); }
+.num { font-variant-numeric:tabular-nums; }
+
+/* hero */
+.hero { text-align:center; padding:26px 16px; }
+.hero .big { font-size:clamp(1.8rem, 8.5vw, 2.6rem); font-weight:750; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums; line-height:1.1; }
+.hero .pct { font-size:clamp(1rem, 4vw, 1.15rem); font-weight:650; margin-top:3px; font-variant-numeric:tabular-nums; }
+.hero .lbl { font-size:.78rem; color:var(--ink2); margin-top:7px; }
+
+/* ozet kutulari */
 .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:12px; }
 .tile { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:11px 13px; }
-.tile .v { font-size:1.12rem; font-weight:680; font-variant-numeric:tabular-nums; }
+.tile .v { font-size:1.1rem; font-weight:680; font-variant-numeric:tabular-nums; }
 .tile .l { font-size:.7rem; color:var(--ink2); margin-top:3px; }
-table { border-collapse:collapse; width:100%; font-size:.85rem; }
-td,th { padding:7px 9px; border-bottom:1px solid var(--grid); text-align:left; }
-th { font-size:.72rem; color:var(--muted); font-weight:650; }
-tr:last-child td { border-bottom:none; }
-.num { text-align:right; font-variant-numeric:tabular-nums; }
-.b { font-weight:650; }
-.fname { color:var(--ink2); font-size:.74rem; }
-h2 { font-size:.9rem; margin:0 0 10px; }
-.days { display:flex; gap:4px; flex-wrap:wrap; }
-.day { border:1px solid var(--border); border-radius:7px; padding:5px 8px; min-width:76px; text-align:center; }
+
+/* fon listesi — genis ekranda tablo, dar ekranda iki satirlik kart */
+.frow { display:grid; align-items:baseline; gap:4px 10px; padding:10px 2px;
+  border-bottom:1px solid var(--grid); font-size:.85rem;
+  grid-template-columns:minmax(0,1fr) 66px 108px 116px 122px 74px;
+  grid-template-areas:"kod adet fiyat deger kazanc pct"; }
+.frow:last-child { border-bottom:none; }
+.fhead { font-size:.7rem; color:var(--muted); font-weight:650; padding-bottom:6px; }
+.c-kod { grid-area:kod; font-weight:650; min-width:0; }
+.c-kod .fname { font-weight:400; color:var(--ink2); font-size:.72rem; line-height:1.3;
+  margin-top:1px; overflow:hidden; text-overflow:ellipsis; }
+.c-adet { grid-area:adet; text-align:right; color:var(--ink2); }
+.c-adet .mlbl { display:none; }
+.c-fiyat { grid-area:fiyat; text-align:right; color:var(--ink2); }
+.c-deger { grid-area:deger; text-align:right; font-weight:650; }
+.c-kazanc { grid-area:kazanc; text-align:right; font-weight:650; }
+.c-pct { grid-area:pct; text-align:right; }
+
+/* grafik */
+#chartbox { position:relative; }
+#chart { display:block; width:100%; touch-action:pan-y; }
+#tip { position:absolute; display:none; pointer-events:none; background:var(--card);
+  border:1px solid var(--border); border-radius:8px; padding:6px 9px; font-size:.74rem;
+  box-shadow:0 3px 12px rgba(0,0,0,.16); white-space:nowrap; z-index:2; }
+#tip .tv { font-weight:650; font-variant-numeric:tabular-nums; }
+svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+
+/* gun gun */
+.days { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:5px; }
+.day { border:1px solid var(--border); border-radius:8px; padding:6px 4px; text-align:center; }
 .day .d { font-size:.64rem; color:var(--muted); }
 .day .v { font-size:.85rem; font-weight:650; font-variant-numeric:tabular-nums; }
 .day .t { font-size:.66rem; color:var(--ink2); font-variant-numeric:tabular-nums; }
-#chartbox { position:relative; }
-#tip { position:absolute; display:none; pointer-events:none; background:var(--card);
-  border:1px solid var(--border); border-radius:8px; padding:6px 9px; font-size:.74rem;
-  box-shadow:0 3px 12px rgba(0,0,0,.14); white-space:nowrap; z-index:2; }
-#tip .tv { font-weight:650; font-variant-numeric:tabular-nums; }
+
 .foot { font-size:.74rem; color:var(--ink2); line-height:1.55; }
+.note { font-size:.78rem; color:var(--ink2); }
 #err { display:none; color:var(--bad); font-weight:600; }
-svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+
+@media (max-width: 640px) {
+  body { padding:14px 13px 22px; }
+  .card { padding:13px 14px; border-radius:11px; }
+  .hero { padding:22px 12px; }
+  .tiles { grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:7px; }
+  .tile .v { font-size:1rem; }
+  .fhead { display:none; }
+  .frow { grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-areas:"kod kazanc pct" "adet fiyat deger"; padding:11px 0; gap:3px 9px; }
+  .c-adet { text-align:left; font-size:.76rem; }
+  .c-adet .mlbl { display:inline; }
+  .c-fiyat { font-size:.76rem; }
+  .days { grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); }
+  .c-kod .fname { white-space:normal; }
+}
 </style></head><body><div class="wrap">
 <h1>💰 Günlük Kazanç</h1>
 <div class="sub" id="sub">Yükleniyor…</div>
@@ -59,13 +102,13 @@ svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums;
 <div class="tiles" id="tiles"></div>
 
 <div class="card" id="fonlarCard" style="display:none">
-  <h2>Fon bazında — son gün</h2>
-  <table id="ftab"></table>
+  <h2 id="fonlarBaslik">Fon bazında</h2>
+  <div id="ftab"></div>
 </div>
 
 <div class="card" id="chartCard" style="display:none">
   <h2>Toplam portföy değeri</h2>
-  <div id="chartbox"><div id="tip"></div><svg id="chart" width="100%" height="220" viewBox="0 0 800 220" preserveAspectRatio="none"></svg></div>
+  <div id="chartbox"><div id="tip"></div><svg id="chart"></svg></div>
 </div>
 
 <div class="card" id="daysCard" style="display:none">
@@ -87,7 +130,9 @@ const S  = v => (v >= 0 ? "+" : "−") + Math.abs(Math.round(v)).toLocaleString(
 const PC = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2).replace(".", ",") + "%";
 const CL = v => v >= 0 ? "g" : "r";
 const TR_AY = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
-const gun = t => { const [y,m,d] = t.split("-"); return +d + " " + TR_AY[+m-1]; };
+const gun = t => { const [, m, d] = t.split("-"); return +d + " " + TR_AY[+m - 1]; };
+
+let CTX = null;   // {fonlar, snaps, vals} — grafigi yeniden cizmek icin
 
 async function yukle() {
   let H, D;
@@ -128,7 +173,7 @@ function ciz(H, D) {
   document.getElementById("sub").textContent = "Son fiyat: " + gun(son.tarih) +
     (onceki ? " · önceki kayıt: " + gun(onceki.tarih) : "") + " · her iş günü otomatik güncellenir";
 
-  // hero: son kayit kazanci
+  // hero
   const hero = document.getElementById("hero");
   hero.style.display = "block";
   if (onceki) {
@@ -140,46 +185,58 @@ function ciz(H, D) {
     document.getElementById("heroLbl").textContent = gun(onceki.tarih) + " → " + gun(son.tarih) + " kazancı";
   } else {
     document.getElementById("heroTL").textContent = TL(deger);
-    document.getElementById("heroLbl").textContent = "Toplam değer (henüz tek kayıt var)";
+    document.getElementById("heroTL").className = "big";
+    document.getElementById("heroPct").textContent = "";
+    document.getElementById("heroLbl").textContent =
+      "Toplam portföy değeri · " + gun(son.tarih) + " başlangıç kaydı, ilk kazanç bir sonraki iş günü çıkar";
   }
 
-  // tiles
+  // ozet kutulari
   const ilk = snaps[0], bas = fark(fonlar, ilk, son);
-  const tiles = [ [TL(deger), "toplam portföy değeri", ""] ];
+  const tiles = [[TL(deger), "toplam portföy değeri", ""]];
   if (snaps.length > 1) {
     tiles.push([S(bas.tl) + " TL", "başlangıçtan beri (" + gun(ilk.tarih) + ")", CL(bas.tl)]);
     tiles.push([PC(bas.pct), "başlangıçtan beri getiri", CL(bas.pct)]);
     tiles.push([snaps.length + " kayıt", "izlenen gün sayısı", ""]);
+  } else {
+    tiles.push([fonlar.length + " fon", "sepetteki fon sayısı", ""]);
   }
   document.getElementById("tiles").innerHTML = tiles.map(t =>
     `<div class="tile"><div class="v ${t[2]}">${t[0]}</div><div class="l">${t[1]}</div></div>`).join("");
 
-  // fon tablosu
-  if (onceki) {
-    const rows = fonlar.map(f => {
-      const p = son.fiyat[f.kod], q = onceki.fiyat[f.kod];
-      if (p == null) return "";
-      const v = f.adet * p;
-      const dTL = q != null ? f.adet * (p - q) : null;
-      const dPC = q != null ? (p - q) / q * 100 : null;
-      return `<tr><td class="b">${f.kod}<div class="fname">${f.ad}</div></td>
-        <td class="num">${f.adet.toLocaleString("tr-TR")}</td>
-        <td class="num">${p.toLocaleString("tr-TR", {maximumFractionDigits: 6})}</td>
-        <td class="num b">${TL(v)}</td>
-        <td class="num b ${dTL == null ? "" : CL(dTL)}">${dTL == null ? "—" : S(dTL) + " TL"}</td>
-        <td class="num ${dPC == null ? "" : CL(dPC)}">${dPC == null ? "—" : PC(dPC)}</td></tr>`;
-    }).join("");
-    document.getElementById("fonlarCard").style.display = "block";
-    document.getElementById("ftab").innerHTML =
-      `<tr><th>Fon</th><th class="num">Adet</th><th class="num">Fiyat</th>
-       <th class="num">Değer</th><th class="num">Kazanç TL</th><th class="num">%</th></tr>` + rows;
-  }
+  // fon listesi
+  // onceki kayit yoksa kazanc sutunlari yerine sepet agirligi gosteriliyor
+  const rows = fonlar.map(f => {
+    const p = son.fiyat[f.kod], q = onceki ? onceki.fiyat[f.kod] : null;
+    if (p == null) return "";
+    const v = f.adet * p;
+    const kazanc = q != null ? `<span class="${CL(f.adet * (p - q))}">${S(f.adet * (p - q))} TL</span>` : "";
+    const sag = q != null
+      ? `<span class="${CL(p - q)}">${PC((p - q) / q * 100)}</span>`
+      : `<span style="color:var(--ink2)">%${(v / deger * 100).toFixed(1).replace(".", ",")}</span>`;
+    return `<div class="frow">
+      <div class="c-kod">${f.kod}<div class="fname">${f.ad}</div></div>
+      <div class="c-adet num">${f.adet.toLocaleString("tr-TR")}<span class="mlbl"> adet</span></div>
+      <div class="c-fiyat num">${p.toLocaleString("tr-TR", { maximumFractionDigits: 6 })}</div>
+      <div class="c-deger num">${TL(v)}</div>
+      <div class="c-kazanc num">${kazanc}</div>
+      <div class="c-pct num">${sag}</div>
+    </div>`;
+  }).join("");
+  document.getElementById("fonlarCard").style.display = "block";
+  document.getElementById("fonlarBaslik").textContent =
+    onceki ? "Fon bazında — son gün" : "Fon bazında — başlangıç dağılımı";
+  document.getElementById("ftab").innerHTML =
+    `<div class="frow fhead"><div class="c-kod">Fon</div><div class="c-adet">Adet</div>
+     <div class="c-fiyat">Fiyat</div><div class="c-deger">Değer</div>
+     <div class="c-kazanc">${onceki ? "Kazanç TL" : ""}</div>
+     <div class="c-pct">${onceki ? "%" : "Ağırlık"}</div></div>` + rows;
 
   // gun gun kartlar (son 12 aralik)
   if (snaps.length > 1) {
     const kartlar = [];
     for (let i = Math.max(1, snaps.length - 12); i < snaps.length; i++) {
-      const g = fark(fonlar, snaps[i-1], snaps[i]);
+      const g = fark(fonlar, snaps[i - 1], snaps[i]);
       kartlar.push(`<div class="day"><div class="d">${gun(snaps[i].tarih)}</div>
         <div class="v ${CL(g.tl)}">${PC(g.pct)}</div><div class="t">${S(g.tl)} TL</div></div>`);
     }
@@ -187,61 +244,95 @@ function ciz(H, D) {
     document.getElementById("days").innerHTML = kartlar.join("");
   }
 
-  // cizgi grafik
-  if (snaps.length > 1) grafik(fonlar, snaps);
+  // grafik
+  if (snaps.length > 1) {
+    CTX = { fonlar, snaps, vals: snaps.map(s => toplam(fonlar, s)) };
+    document.getElementById("chartCard").style.display = "block";
+    grafik();
+  }
 }
 
-function grafik(fonlar, snaps) {
-  document.getElementById("chartCard").style.display = "block";
-  const W = 800, Hh = 220, mL = 58, mR = 14, mT = 14, mB = 26;
-  const vals = snaps.map(s => toplam(fonlar, s));
-  const lo = Math.min(...vals), hi = Math.max(...vals), pad = Math.max((hi - lo) * .12, hi * .002);
+function grafik() {
+  if (!CTX) return;
+  const { fonlar, snaps, vals } = CTX;
+  const box = document.getElementById("chartbox");
+  const dar = window.innerWidth <= 640;
+  // viewBox'i kutu genisligine esitliyoruz — boylece yazilar hicbir ekranda gerilmiyor
+  const W = Math.max(260, Math.round(box.clientWidth)), Hh = dar ? 170 : 220;
+  const mL = dar ? 44 : 58, mR = dar ? 8 : 14, mT = 12, mB = 24;
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = Math.max((hi - lo) * .12, hi * .002);
   const y0 = lo - pad, y1 = hi + pad;
   const X = i => mL + (W - mL - mR) * (snaps.length === 1 ? .5 : i / (snaps.length - 1));
   const Y = v => mT + (Hh - mT - mB) * (1 - (v - y0) / (y1 - y0));
+
   let out = "";
-  // yatay izgara + eksen etiketi (3 seviye)
   for (let k = 0; k <= 2; k++) {
     const v = y0 + (y1 - y0) * k / 2, y = Y(v);
     out += `<line x1="${mL}" y1="${y}" x2="${W - mR}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>` +
-           `<text x="${mL - 6}" y="${y + 3}" text-anchor="end">${(v/1e6).toFixed(2).replace(".", ",")}M</text>`;
+           `<text x="${mL - 6}" y="${y + 3}" text-anchor="end">${(v / 1e6).toFixed(2).replace(".", ",")}M</text>`;
   }
   const pts = vals.map((v, i) => [X(i), Y(v)]);
   const path = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
-  out += `<path d="${path} L${pts[pts.length-1][0].toFixed(1)} ${Hh - mB} L${pts[0][0].toFixed(1)} ${Hh - mB} Z"
+  out += `<path d="${path} L${pts[pts.length - 1][0].toFixed(1)} ${Hh - mB} L${pts[0][0].toFixed(1)} ${Hh - mB} Z"
             fill="var(--acc)" opacity=".08"/>`;
   out += `<path d="${path}" fill="none" stroke="var(--acc)" stroke-width="2"
             stroke-linejoin="round" stroke-linecap="round"/>`;
-  // x etiketleri (sigacak kadar)
-  const step = Math.ceil(snaps.length / 8);
+  const step = Math.ceil(snaps.length / (dar ? 4 : 8));
+  const sonIdx = snaps.length - 1;
   snaps.forEach((s, i) => {
-    if (i % step === 0 || i === snaps.length - 1)
-      out += `<text x="${X(i)}" y="${Hh - 8}" text-anchor="middle">${gun(s.tarih)}</text>`;
+    // ara etiket son etikete cok yakinsa cizilmiyor (ust uste binmesin)
+    if (i === sonIdx || (i % step === 0 && sonIdx - i >= step / 2)) {
+      const anchor = i === 0 ? "start" : i === snaps.length - 1 ? "end" : "middle";
+      const x = i === 0 ? mL : i === snaps.length - 1 ? W - mR : X(i);
+      out += `<text x="${x}" y="${Hh - 7}" text-anchor="${anchor}">${gun(s.tarih)}</text>`;
+    }
   });
-  pts.forEach((p, i) => {
-    out += `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--acc)" stroke="var(--card)" stroke-width="2"/>`;
+  pts.forEach(p => {
+    out += `<circle cx="${p[0]}" cy="${p[1]}" r="${dar ? 3 : 3.5}" fill="var(--acc)"
+              stroke="var(--card)" stroke-width="2"/>`;
   });
-  out += `<line id="cross" y1="${mT}" y2="${Hh - mB}" stroke="var(--muted)" stroke-width="1" opacity="0" stroke-dasharray="3 3"/>`;
+  out += `<line id="cross" y1="${mT}" y2="${Hh - mB}" stroke="var(--muted)" stroke-width="1"
+            opacity="0" stroke-dasharray="3 3"/>`;
+
   const svg = document.getElementById("chart");
+  svg.setAttribute("viewBox", `0 0 ${W} ${Hh}`);
+  svg.setAttribute("height", Hh);
   svg.innerHTML = out;
-  // hover
-  const tip = document.getElementById("tip"), cross = () => svg.querySelector("#cross");
-  svg.addEventListener("mousemove", ev => {
+
+  // dokunma ve fare ayni kod yolunu kullaniyor
+  const tip = document.getElementById("tip");
+  const goster = ev => {
     const r = svg.getBoundingClientRect();
     const fx = (ev.clientX - r.left) / r.width * W;
-    let bi = 0, bd = 1e9;
+    let bi = 0, bd = Infinity;
     pts.forEach((p, i) => { const d = Math.abs(p[0] - fx); if (d < bd) { bd = d; bi = i; } });
-    const c = cross(); c.setAttribute("x1", pts[bi][0]); c.setAttribute("x2", pts[bi][0]); c.setAttribute("opacity", ".6");
-    const g = bi > 0 ? fark(fonlar, snaps[bi-1], snaps[bi]) : null;
+    const c = svg.querySelector("#cross");
+    c.setAttribute("x1", pts[bi][0]); c.setAttribute("x2", pts[bi][0]); c.setAttribute("opacity", ".6");
+    const g = bi > 0 ? fark(fonlar, snaps[bi - 1], snaps[bi]) : null;
     tip.style.display = "block";
     tip.innerHTML = `${gun(snaps[bi].tarih)}<br><span class="tv">${TL(vals[bi])}</span>` +
       (g ? `<br><span class="tv ${CL(g.tl)}">${S(g.tl)} TL · ${PC(g.pct)}</span>` : "");
     const bx = pts[bi][0] / W * r.width;
-    tip.style.left = Math.min(Math.max(bx + 12, 4), r.width - 150) + "px";
-    tip.style.top = (pts[bi][1] / Hh * r.height - 8) + "px";
-  });
-  svg.addEventListener("mouseleave", () => { tip.style.display = "none"; cross().setAttribute("opacity", "0"); });
+    tip.style.left = Math.min(Math.max(bx + 12, 4), Math.max(4, r.width - tip.offsetWidth - 4)) + "px";
+    tip.style.top = Math.max(0, pts[bi][1] / Hh * r.height - 8) + "px";
+  };
+  const gizle = () => {
+    tip.style.display = "none";
+    const c = svg.querySelector("#cross"); if (c) c.setAttribute("opacity", "0");
+  };
+  let kapat;
+  const dokunmali = ev => ev.pointerType === "touch" || ev.pointerType === "pen";
+  svg.addEventListener("pointerdown", ev => { clearTimeout(kapat); goster(ev); });
+  svg.addEventListener("pointermove", ev => { clearTimeout(kapat); goster(ev); });
+  // dokunmada pointerleave hemen tetiklendigi icin ipucu bir sure ekranda birakiliyor
+  svg.addEventListener("pointerleave", ev => { if (!dokunmali(ev)) gizle(); });
+  svg.addEventListener("pointerup", ev => { if (dokunmali(ev)) kapat = setTimeout(gizle, 3000); });
+  svg.addEventListener("pointercancel", gizle);
 }
+
+let rt;
+window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(grafik, 150); });
 
 yukle();
 setInterval(yukle, 15 * 60 * 1000);
