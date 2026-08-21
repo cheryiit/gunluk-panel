@@ -1,0 +1,10 @@
+{
+  "_not": "Adet degistirmek icin sadece bu dosyayi duzenle. Fon eklemek icin yeni satir ekle (kod Fintables/TEFAS kodu olmali).",
+  "fonlar": [
+    { "kod": "TLY", "ad": "Tera Portföy Birinci Serbest Fon", "adet": 82 },
+    { "kod": "PBR", "ad": "Pusula Portföy Birinci Değişken Fon", "adet": 113043 },
+    { "kod": "DFI", "ad": "Atlas Portföy Serbest Fon", "adet": 79242 },
+    { "kod": "RBR", "ad": "Re-Pie Portföy Birinci Katılım Serbest Fon", "adet": 55016 },
+    { "kod": "IHC", "ad": "Inveo Portföy Inter Serbest Fon", "adet": 6411 }
+  ]
+}
