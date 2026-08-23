@@ -70,7 +70,8 @@ svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums;
 .day .t { font-size:.66rem; color:var(--ink2); font-variant-numeric:tabular-nums; }
 
 .foot { font-size:.74rem; color:var(--ink2); line-height:1.55; }
-.note { font-size:.78rem; color:var(--ink2); }
+.note { font-size:.76rem; color:var(--ink2); background:var(--card);
+  border:1px solid var(--border); border-radius:9px; padding:8px 11px; margin-bottom:12px; line-height:1.45; }
 #err { display:none; color:var(--bad); font-weight:600; }
 
 @media (max-width: 640px) {
@@ -91,6 +92,7 @@ svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums;
 </style></head><body><div class="wrap">
 <h1>💰 Günlük Kazanç</h1>
 <div class="sub" id="sub">Yükleniyor…</div>
+<div class="note" id="tazelik" style="display:none"></div>
 <div class="card" id="err"></div>
 
 <div class="card hero" id="hero" style="display:none">
@@ -117,9 +119,9 @@ svg text { fill:var(--muted); font-size:10px; font-variant-numeric:tabular-nums;
 </div>
 
 <div class="card foot">
-Adetler <b>holdings.json</b> dosyasında sabittir; fiyatlar her iş günü GitHub Actions ile
-Fintables/TEFAS verisinden otomatik güncellenir. Sayfa hiçbir dış girdi kabul etmez —
-yalnızca depoya işlenmiş veriyi gösterir. Fiyatlar bir önceki iş gününün kapanış fiyatı olabilir;
+Adetler <b>holdings.json</b> dosyasında sabittir; fiyatlar günde iki kez (10:00 ve 20:00 TR) GitHub Actions ile
+Fintables'ın günlük kapanış serisinden otomatik güncellenir. Sayfa hiçbir dış girdi kabul etmez —
+yalnızca depoya işlenmiş veriyi gösterir. Her kayıt fonun gerçek kapanış tarihiyle eşleşir;
 kazanç rakamları stopaj öncesidir. Sayfa 15 dakikada bir kendini tazeler.
 </div>
 </div>
@@ -131,6 +133,16 @@ const PC = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2).replace(".", ","
 const CL = v => v >= 0 ? "g" : "r";
 const TR_AY = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
 const gun = t => { const [, m, d] = t.split("-"); return +d + " " + TR_AY[+m - 1]; };
+
+// TR saatine gore en son is gunu (hafta sonuysa cumaya ceker)
+function sonIsGunu() {
+  const bugun = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul",
+    year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const [y, m, d] = bugun.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  while (dt.getUTCDay() === 0 || dt.getUTCDay() === 6) dt.setUTCDate(dt.getUTCDate() - 1);
+  return dt.toISOString().slice(0, 10);
+}
 
 let CTX = null;   // {fonlar, snaps, vals} — grafigi yeniden cizmek icin
 
@@ -172,6 +184,17 @@ function ciz(H, D) {
   const deger = toplam(fonlar, son);
   document.getElementById("sub").textContent = "Son fiyat: " + gun(son.tarih) +
     (onceki ? " · önceki kayıt: " + gun(onceki.tarih) : "") + " · her iş günü otomatik güncellenir";
+
+  // veri son iş gününün gerisindeyse nedenini yaz
+  const tz = document.getElementById("tazelik"), sib = sonIsGunu();
+  if (son.tarih < sib) {
+    tz.style.display = "block";
+    tz.innerHTML = `⏳ <b>${gun(sib)}</b> için henüz tüm fonların fiyatı açıklanmadı, ` +
+      `panel son <b>tam</b> işlem gününü (${gun(son.tarih)}) gösteriyor. ` +
+      `Bir fonun bile fiyatı eksikken o gün kaydedilmiyor — yarım gün sahte kazanç göstermesin diye.`;
+  } else {
+    tz.style.display = "none";
+  }
 
   // hero
   const hero = document.getElementById("hero");
