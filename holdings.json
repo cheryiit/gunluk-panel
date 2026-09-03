@@ -1,16 +1,13 @@
 {
   "_not": "Adet degistirmek icin sadece bu dosyayi duzenle. Fon eklemek icin yeni satir ekle (kod TEFAS/Fintables kodu olmali).",
-  "_sepet": "SKOR v4 #1 sepeti - P1'den 21.08.2026'da gecildi. Adetler gecis planindaki hedef TL tutarlarinin o gunku fiyatlara bolunmesiyle bulundu.",
+  "_guncelleme": "03.09.2026 - hesap ekranindaki gercek adetler. TLY tamamen satildi. GPG (21.128) ve IHC (52.036) 02.09'da satildi, valorleri 04.09 ve 07.09 - bu yuzden listeden cikarildi. Nakit ve bekleyen TP2 alimi panelde izlenmiyor.",
   "fonlar": [
-    { "kod": "TLY", "ad": "Tera Portföy Birinci Serbest Fon", "adet": 79 },
-    { "kod": "TP2", "ad": "Tera Portföy Para Piyasası (TL) Fonu", "adet": 158885 },
-    { "kod": "DFI", "ad": "Atlas Portföy Serbest Fon", "adet": 33628 },
-    { "kod": "PTO", "ad": "Pardus Portföy Temettü Ödeyen Şirketler Hisse Senedi Fonu", "adet": 87868 },
-    { "kod": "IJZ", "ad": "İş Portföy Siber Güvenlik Teknolojileri Değişken Fon", "adet": 9922 },
-    { "kod": "IHC", "ad": "Inveo Portföy Inter Serbest Fon", "adet": 14887 },
-    { "kod": "LPH", "ad": "Statech Portföy İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 71037 },
-    { "kod": "GPG", "ad": "Inveo Portföy Birinci Değişken Fon", "adet": 6042 },
-    { "kod": "RBR", "ad": "Re-Pie Portföy Birinci Katılım Serbest Fon", "adet": 19512 },
-    { "kod": "HEH", "ad": "Hedef Portföy Algo Everest İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 15739 }
+    { "kod": "TP2", "ad": "Tera Portföy Para Piyasası (TL) Fonu", "adet": 711966 },
+    { "kod": "PTO", "ad": "Pardus Portföy Temettü Ödeyen Şirketler Hisse Senedi Fonu", "adet": 308339 },
+    { "kod": "LPH", "ad": "Statech Portföy İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 248882 },
+    { "kod": "DFI", "ad": "Atlas Portföy Serbest Fon", "adet": 47244 },
+    { "kod": "RBR", "ad": "Re-Pie Portföy Birinci Katılım Serbest Fon", "adet": 68545 },
+    { "kod": "HEH", "ad": "Hedef Portföy Algo Everest İstatistiksel Arbitraj Hisse Senedi Serbest Fon", "adet": 55230 },
+    { "kod": "IJZ", "ad": "İş Portföy Siber Güvenlik Teknolojileri Değişken Fon", "adet": 9922 }
   ]
 }

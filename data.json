@@ -2,18 +2,15 @@
  "_not": "snapshots = izlenen sepet. arsiv_p1 = 21.08.2026'da cikilan eski P1 portfoyu, sayfa okumaz.",
  "snapshots": [
   {
-   "tarih": "2026-08-21",
+   "tarih": "2026-09-03",
    "fiyat": {
-    "TLY": 8865.329788,
-    "TP2": 2.170463,
-    "DFI": 5.57214,
-    "PTO": 1.837574,
-    "IJZ": 14.465307,
-    "IHC": 8.033841,
-    "LPH": 1.45918,
-    "GPG": 17.155265,
-    "RBR": 3.779926,
-    "HEH": 3.293035
+    "TP2": 2.206948,
+    "PTO": 1.846134,
+    "LPH": 1.475086,
+    "DFI": 6.112184,
+    "RBR": 3.918087,
+    "HEH": 3.320263,
+    "IJZ": 14.299432
    }
   },
   {

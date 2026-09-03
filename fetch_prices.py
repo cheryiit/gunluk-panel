@@ -20,7 +20,7 @@ UDF = "https://markets.fintables.com/barbar/udf/history"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 FROM, TO = 1700000000, 2000000000        # genis aralik: fonun tum gecmisi
-BASLANGIC = "2026-08-21"                 # portfoyun izlenmeye baslandigi gun
+BASLANGIC = "2026-09-03"                 # portfoyun yeniden kuruldugu gun (SPK duzenlemesi sonrasi)
 
 
 def _seri(ham, kod):
